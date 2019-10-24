@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend-prod # Name of the deployment., will be used during creation of service
+    namespace: prefix
+
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: frontend  # all pods with frontend are part of this deployment, This must match with the pods name.
+    template: # Describes the pods that will be used for the deployment.
+        metadata:
+            labels: # Same labels are set for all pods.
+                app: frontend
+                version: prod
+        spec:
+            containers: # List of containers running in each pod.
+                - name: frontend
+                  image: ishanbhatt/prefix-part1:test  # repo/image:tag
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                    - containerPort: 6756
+                  env:
+                    - name: SERVICE_NAME
+                      value: "frontend-prod"
+                    - name: BACKEND_URL
+                      value: "http://backend"         # This will come from the service we will create
+                                                      # This is a front-end so it's service will be of type LoadBalancer
+                                                      # Backend does not need to go outside so we will create it with NoDeIp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend-canary
+    namespace: prefix
+
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: frontend  # all pods with frontend are part of this deployment, This must match with the pods name.
+    template: # Describes the pods that will be used for the deployment.
+        metadata:
+            labels: # Same labels are set for all pods.
+                app: frontend
+                version: canary
+        spec:
+            containers: # List of containers running in each pod.
+                - name: frontend
+                  image: ishanbhatt/prefix-part1:fixed  # repo/image:tag
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                    - containerPort: 6756
+                  env:
+                    - name: SERVICE_NAME
+                      value: "frontend-canary"
+                    - name: BACKEND_URL
+                      value: "http://backend"         # This will come from the service we will create
+                                                      # This is a front-end so it's service will be of type LoadBalancer
+                                                      # Backend does not need to go outside so we will create it with NoDeIp

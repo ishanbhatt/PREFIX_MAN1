@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+  namespace: prefix
+
+spec:
+  selector:
+    app: frontend
+  type: LoadBalancer
+  ports:
+    - port: 6756
+      targetPort: 6756
+      name: http
