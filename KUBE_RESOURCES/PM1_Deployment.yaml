@@ -2,13 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
     name: frontend-prod # Name of the deployment., will be used during creation of service
-    namespace: prefix
+    labels:
+      app: frontend
+      version: prod
 
 spec:
     replicas: 1
     selector:
         matchLabels:
             app: frontend  # all pods with frontend are part of this deployment, This must match with the pods name.
+            version: prod
     template: # Describes the pods that will be used for the deployment.
         metadata:
             labels: # Same labels are set for all pods.
@@ -33,13 +36,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
     name: frontend-canary
-    namespace: prefix
+    labels:
+      app: backend
+      version: canary
 
 spec:
     replicas: 1
     selector:
         matchLabels:
             app: frontend  # all pods with frontend are part of this deployment, This must match with the pods name.
+            version: canary
     template: # Describes the pods that will be used for the deployment.
         metadata:
             labels: # Same labels are set for all pods.

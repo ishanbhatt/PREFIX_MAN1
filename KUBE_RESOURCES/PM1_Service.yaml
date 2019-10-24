@@ -5,7 +5,6 @@ metadata:
   name: frontend
   labels:
     app: frontend
-  namespace: prefix
 
 spec:
   selector:
