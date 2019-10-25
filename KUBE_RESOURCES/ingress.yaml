@@ -1,0 +1,45 @@
+# https://medium.com/@zhaohuabing/which-one-is-the-right-choice-for-the-ingress-gateway-of-your-service-mesh-21a280d4a29c
+# Why service may be the wrong here as the routing is done by GCP without your say
+apiVersion: networking.istio.io/v1alpha3  # This just allows the requests on 6756, Nothing on routing
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 6756
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: destination-frontend
+spec:
+  host: frontend
+  subsets:
+    - name: v1
+      labels:
+        version: prod
+    - name: v2
+      labels:
+        version: canary
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-route
+spec:
+  hosts:
+    - frontend
+  gateways:
+    - my-gateway  # it is for the my-gateway's allowed traffic to be routed to somewhere
+  http:
+  - route:
+    - destination:
+        host: frontend
+        subset: v1

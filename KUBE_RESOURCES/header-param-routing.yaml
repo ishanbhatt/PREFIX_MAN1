@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: backend-header
+spec:
+  hosts:
+  - backend
+  http:
+  - match:
+    - headers:
+        x-dev-user:
+          exact: super-secret
+    route:
+      - destination:
+          host: backend
+          subset: v1
+  - route:
+    - destination:
+        host: backend
+        subset: v1
